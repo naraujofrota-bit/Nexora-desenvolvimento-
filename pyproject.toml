@@ -1,0 +1,12 @@
+﻿[project]
+name = "nexora"
+version = "0.1.0"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "dj-database-url>=2.3,<3",
+    "django>=6.0,<6.1",
+    "psycopg[binary]>=3.2,<4",
+    "whitenoise>=6.9,<7",
+]
+
+

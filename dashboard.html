@@ -1,0 +1,44 @@
+﻿{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Visão geral · Nexora{% endblock %}
+{% block body %}
+<aside class="sidebar">
+  <a class="brand" href="{% url 'dashboard' %}"><span class="brand-lockup" role="img" aria-label="Nexora"></span></a>
+  <nav class="nav" aria-label="Navegação principal">
+    <p class="nav-label">ESPAÇO DE TRABALHO</p>
+    <a class="nav-item active" href="{% url 'dashboard' %}"><span>⌂</span>Visão geral</a>
+    <a class="nav-item" href="{% url 'demands' %}"><span>☷</span>Demandas</a>
+    <a class="nav-item" href="{% url 'demands' %}"><span>▦</span>Kanban</a>
+    {% if user.is_staff %}
+    <a class="nav-item" href="{% url 'admin:core_project_changelist' %}"><span>▱</span>Projetos</a>
+    <a class="nav-item" href="{% url 'admin:core_company_changelist' %}"><span>▤</span>Empresas</a>
+    {% endif %}
+    {% if user.is_staff %}<a class="nav-item" href="{% url 'admin:index' %}"><span>⚙</span>Configurações</a>{% endif %}
+  </nav>
+  <div class="sidebar-bottom"><span><b>{{ user.get_full_name|default:user.username }}</b><small>{% if user.is_staff %}Administradora{% else %}Programadora{% endif %}</small></span></div>
+  <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="sidebar-logout" type="submit">↪ <span>Sair da conta</span></button></form>
+</aside>
+<main class="main">
+  <header class="topbar"><span class="search">Nexora · Gestão de demandas</span><div class="top-actions"><button class="icon-btn theme-toggle" type="button" aria-label="Alternar tema">◐</button></div></header>
+  <section class="page">
+    {% if messages %}{% for message in messages %}<div class="messages">{{ message }}</div>{% endfor %}{% endif %}
+    <div class="welcome-row"><div><div class="eyebrow"><span class="live-dot"></span>PAINEL DE ACOMPANHAMENTO</div><h1>Olá, {{ user.first_name|default:user.username }}</h1><p class="muted">Resumo das demandas nos sistemas autorizados.</p></div><a class="button primary" href="{% url 'demand-create' %}">＋ Nova demanda</a></div>
+    <section class="metrics" aria-label="Resumo das demandas">
+      <article class="metric"><div class="metric-head"><span>Demandas abertas</span><span class="metric-icon blue">▤</span></div><strong>{{ total }}</strong><small>Não concluídas</small><div class="metric-line blue-line"></div></article>
+      <article class="metric"><div class="metric-head"><span>Em andamento</span><span class="metric-icon teal">◷</span></div><strong>{{ progress }}</strong><small>Em desenvolvimento</small><div class="metric-line teal-line"></div></article>
+      <article class="metric"><div class="metric-head"><span>Em teste</span><span class="metric-icon amber">⌕</span></div><strong>{{ testing }}</strong><small>Aguardando homologação</small><div class="metric-line amber-line"></div></article>
+      <article class="metric"><div class="metric-head"><span>Concluídas</span><span class="metric-icon green">✓</span></div><strong>{{ done }}</strong><small>Entregas realizadas</small><div class="metric-line green-line"></div></article>
+    </section>
+    <section class="panel table-panel">
+      <div class="panel-heading"><div><h2>Demandas recentes</h2><p class="muted">Registros salvos no banco do Nexora</p></div><a class="text-link" href="{% url 'demands' %}">Ver todas →</a></div>
+      <div class="table-scroll"><table><thead><tr><th>DEMANDA</th><th>EMPRESA · SISTEMA</th><th>RESPONSÁVEL</th><th>PRIORIDADE</th><th>SITUAÇÃO</th><th>PRAZO</th><th></th></tr></thead><tbody>
+      {% for d in recent %}<tr><td><div class="demand-title">{{ d.title }}</div><div class="demand-sub">{{ d.code }} · {{ d.description|truncatechars:90 }}</div></td><td>{{ d.project.company.name }}<br>{{ d.project.name }}</td><td>{{ d.owner|default:"Não atribuído" }}</td><td>{{ d.get_priority_display }}</td><td><span class="badge status-{{ d.status }}">{{ d.get_status_display }}</span></td><td>{{ d.due_date|date:"d M"|default:"—" }}</td><td><form method="post" action="{% url 'demand-delete' d.pk %}">{% csrf_token %}<button class="row-menu" type="submit" aria-label="Excluir {{ d.code }}">···</button></form></td></tr>
+      {% empty %}<tr><td colspan="7">Ainda não há demandas. Cadastre empresas e sistemas em Configurações para começar.</td></tr>{% endfor %}
+      </tbody></table></div>
+    </section>
+    <footer><span>© 2026 Nexora</span><span>Demandas que viram progresso</span></footer>
+  </section>
+</main>
+{% endblock %}
+
+

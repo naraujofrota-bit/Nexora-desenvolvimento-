@@ -1,0 +1,10 @@
+﻿{% extends "core/base.html" %}
+{% block title %}Demandas · Nexora{% endblock %}
+{% block body %}
+<aside class="sidebar"><a class="brand" href="{% url 'dashboard' %}"><span class="brand-lockup"></span></a><nav class="nav"><p class="nav-label">ESPAÇO DE TRABALHO</p><a class="nav-item" href="{% url 'dashboard' %}">⌂ Visão geral</a><a class="nav-item active" href="{% url 'demands' %}">☷ Demandas</a>{% if user.is_staff %}<a class="nav-item" href="{% url 'admin:index' %}">⚙ Configurações</a>{% endif %}</nav><div class="sidebar-bottom"><b>{{ user.username }}</b></div><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="sidebar-logout" type="submit">↪ Sair da conta</button></form></aside>
+<main class="main"><header class="topbar"><span>Nexora · Demandas</span><button class="icon-btn theme-toggle" type="button">◐</button></header><section class="page form-page">
+<div class="welcome-row"><div><span class="eyebrow">ACOMPANHAMENTO</span><h1>Demandas</h1><p class="muted">Pesquise e acompanhe os registros dos seus sistemas.</p></div><a class="button primary" href="{% url 'demand-create' %}">＋ Nova demanda</a></div>
+<form method="get" class="toolbar"><input class="form-control" name="q" value="{{ query }}" placeholder="Buscar por código ou título"><button class="button secondary">Pesquisar</button></form>
+<section class="panel table-panel"><div class="table-scroll"><table><thead><tr><th>CÓDIGO · DEMANDA</th><th>EMPRESA · SISTEMA</th><th>RESPONSÁVEL</th><th>PRIORIDADE</th><th>SITUAÇÃO</th><th>PRAZO</th></tr></thead><tbody>{% for d in demands %}<tr><td><b>{{ d.code }} · {{ d.title }}</b><div class="demand-sub">{{ d.description|truncatechars:100 }}</div></td><td>{{ d.project.company.name }} · {{ d.project.name }}</td><td>{{ d.owner|default:"Não atribuído" }}</td><td>{{ d.get_priority_display }}</td><td>{{ d.get_status_display }}</td><td>{{ d.due_date|date:"d/m/Y"|default:"—" }}</td></tr>{% empty %}<tr><td colspan="6">Nenhuma demanda encontrada.</td></tr>{% endfor %}</tbody></table></div></section>
+</section></main>
+{% endblock %}

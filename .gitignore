@@ -1,0 +1,13 @@
+﻿.venv/
+__pycache__/
+*.py[cod]
+*.sqlite3
+.env
+.env.*
+!.env.example
+.static/
+.vercel/
+runserver*.log
+runserver*.out.log
+runserver*.err.log
+.DS_Store
